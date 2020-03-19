@@ -1,0 +1,68 @@
+ create table FRS_TBL_User_Credentials(Userid varchar2(6),Password varchar2(20) NOT NULL,Usertype varchar2(1),Loginstatus number(1),PRIMARY KEY(Userid));
+
+ create table FRS_TBL_User_Profile(Userid varchar2(6) PRIMARY KEY,Firstname varchar2(20) NOT NULL,Lastname varchar2(20) NOT NULL,DateOfBirth date NOT NULL,Gender varchar2(7) NOT NULL,Street varchar(30) NOT NULL,Location varchar2(20) NOT NULL,City varchar2(20) NOT NULL,State varchar2(20) NOT NULL,PinCode varchar2(10), MobileNo varchar(10),EmailId varchar2(30) NOT NULL,FOREIGN KEY(Userid) REFERENCES FRS_TBL_User_Credentials(Userid));
+ create table FRS_TBL_CreditCard(CreditCardNumber varchar(16),
+    ValidFrom varchar(7) NOT NULL,
+    ValidTo varchar(7) NOT NULL,
+    CreditBalance number NOT NULL,
+    Userid varchar2(6), PRIMARY KEY(CreditCardNumber), FOREIGN KEY(Userid) REFERENCES FRS_TBL_User_Credentials(Userid));
+
+ create table FRS_TBL_Route(Routeid varchar(8) PRIMARY KEY,
+    Source varchar(20) NOT NULL,
+    Destination varchar(20) NOT NULL,
+    Distance number NOT NULL,
+    Fare number NOT NULL);
+
+create table FRS_TBL_Flight(FlightId varchar(6) PRIMARY KEY,
+    FlightName varchar(15) NOT NULL,
+    Seatingcapacity number(5) NOT NULL,
+    Reservationcapacity number(5) NOT NULL);
+
+create table FRS_TBL_Schedule(Scheduleid varchar(8) PRIMARY KEY,
+   Flightid varchar(6) NOT NULL,
+    Routeid varchar(8) NOT NULL,
+    TravelDuration number NOT NULL,
+    AvailableDays varchar(30) NOT NULL,
+    DepartureTime varchar(4) NOT NULL,
+    FOREIGN KEY(Flightid) REFERENCES FRS_TBL_Flight(Flightid),
+    FOREIGN KEY(Routeid) REFERENCES FRS_TBL_Route(Routeid));
+
+ create table FRS_TBL_Reservation(Reservationid varchar(8) PRIMARY KEY,
+    Userid varchar(6) NOT NULL,
+    Scheduleid varchar(8) NOT NULL,
+    Reservationtype varchar(20) NOT NULL,
+    Bookingdate date NOT NULL,
+    Journeydate date NOT NULL,
+    Noofseats number NOT NULL,
+    Totalfare number,
+    Bookingstatus number(1),
+   FOREIGN KEY(Userid) REFERENCES FRS_TBL_User_Credentials(Userid),
+   FOREIGN KEY(Scheduleid) REFERENCES FRS_TBL_Schedule(Scheduleid));
+
+create table FRS_TBL_Passenger(Reservationid varchar(8),
+    Passengerid varchar(8) PRIMARY KEY,
+    Name varchar(20) NOT NULL,
+    Gender varchar(6) NOT NULL,
+    Age varchar(6) NOT NULL,
+    Seatno varchar(10) NOT NULL,
+    FOREIGN KEY(Reservationid) REFERENCES FRS_TBL_Reservation(Reservationid));
+
+create sequence FRS_SEQ_USER_ID
+    start with 1000
+    increment by 1;
+
+ create sequence FRS_SEQ_ROUTE_ID
+    start with 1000
+    increment by 1;
+
+create sequence FRS_SEQ_FLIGHT_ID
+    start with 1000
+    increment by 1;
+
+create sequence FRS_SEQ_SCHEDULE_ID
+   start with 1000
+    increment by 1;
+
+create sequence FRS_SEQ_RESERVATION_ID
+    start with 1000
+    increment by 1;

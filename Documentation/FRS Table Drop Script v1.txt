@@ -1,0 +1,8 @@
+drop table FRS_TBL_Passenger;
+drop table FRS_TBL_Reservation;
+drop table FRS_TBL_Schedule;
+drop table FRS_TBL_Flight;
+drop table FRS_TBL_Route;
+drop table FRS_TBL_CreditCard;
+drop table FRS_TBL_User_Profile;
+drop table FRS_TBL_User_Credentials;

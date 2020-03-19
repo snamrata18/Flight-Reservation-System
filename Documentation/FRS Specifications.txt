@@ -1,0 +1,108 @@
+PACKAGE SPECIFICATION
+	1. Service: com.mphasis.frs.service
+	2. Bean: com.mphasis.frs.bean
+	3. DAO: com.mphasis.frs.dao
+	4. REST Controller: com.mphasis.frs.control
+	5. Interfaces: com.mphasis.frs.iFRS
+
+BEAN SPECIFICATION (Package: com.mphasis.frs.bean)
+	1. ProfileBean (Table: User Profile [FRS_TBL_USER_PROFILE]) {Users}
+		1. userID (string)
+		2. firstName (string)
+		3. lastName (string)
+		4. dateOfBirth (util.Date) {DO NOT FORGET TO USE @Temporal(TemporalType.DATE) Annotation for date in Hibernate}
+		5. gender (string)
+		6. street (string)
+		7. location (string)
+		8. city (string)
+		9. state (string)
+		10. pincode (string)
+		11. mobileNo (string)
+		12. emailID (string)
+		13. password (string)
+	2. CredentialsBean (Table: Credentials [FRS_TBL_USER_CREDENTIALS]) {Login}
+		1. userID (string)
+		2. password (string)
+		3. userType (string) ['A', 'C', 'FAIL', 'INVALID']
+		4. loginStatus (string) ['on', 'off']
+	3. FlightBean (Table: Flights [FRS_TBL_FLIGHT]) {Individual flight}
+		1. flightID (string)
+		2. flightName (string)
+		3. seatingCapacity (int) {Total capacity}
+		4. reservationCapacity (int) {Current available}
+	4. ScheduleBean (Table: Schedules [FRS_TBL_SCHEDULE]) {Planes per Flight}
+		1. scheduleID (string)
+		2. flightID (string)
+		3. routeID (string)
+		4. travelDuration (int)
+		5. availableDays (string)
+		6. departureTime (string) {check Validation}
+	5. ReservationBean (Table: Reservations [FRS_TBL_RESERVATION]) {Booking Details}
+		1. reservationID (string)
+		2. userID (string)
+		3. scheduleID (string)
+		4. reservationType (string)
+		5. bookingDate (util.date)
+		6. journerDate (util.date)
+		7. noOfSeats (int) {no of seats booked}
+		8. totalFare (double)
+		9. bookingStatus (int) [0, 1]
+	6. PassengerBean (Table: Passengers [FRS_TBL_PASSENGER]) {All passenger list}
+		1. reservationID (string)
+		2. name (string) {passenger}
+		3. gender (string)
+		4. age (int)
+		5. seatNo (int)
+	7. RouteBean (Table: Routes [FRS_TBL_ROUTE]) {Unique flight}
+		1. routeID (string)
+		2. source (string)
+		3. destination (string)
+		4. distance (int)
+		5. fare (double)
+
+INTERFACE SPECIFICATION (Package: com.mphasis.frs.iFRS)
+	1. (INT) IAdminstrator - Service
+		1. (M) string addFlight(FlightBean flightBean) ['SUCCESS', 'FAIL', 'ERROR']
+		2. (M) string modifyFlight(FlightBean flightBean)
+		3. (M) int removeFlight(ArrayList<String> flightID)
+		4. (M) string addSchedule(ScheduleBean scheduleBean) ['SUCCESS', 'FAIL', 'ERROR']
+		5. (M) string modifySchedule(ScheduleBean scheduleBean)
+		6. (M) int removeSchedule(ArrayList<String> scheduleID)
+		7. (M) string addRoute(RouteBean routeBean) ['SUCCESS', 'FAIL', 'ERROR']
+		8. (M) string modifyRoute(RouteBean routeBean)
+		9. (M) int removeFlight(ArrayList<String> routeID)
+		10. (M) FlightBean viewByFlightId(String flightId)
+		11. (M) RouteBean viewByRouteId(String routeId) 
+		12. (M) ArrayList<FlightBean> viewByAllFlights() 
+		13. (M) ArrayList<RouteBean> viewByAllRoute()
+		14. (M) ArrayList<ScheduleBean> viewByAllSchedule()
+		15. (M) ScheduleBean viewByScheduleId(String scheduleId)
+		16. (M) ArrayList<PassengerBean> viewPassengersByFlight(String scheduleId)
+	2. (INT) ICustomer - Service
+		1. (M) ArrayList<ScheduleBean> viewScheduleByRoute(String source, String destination, Date date) 
+		2. (M) String reserveTicket(ReservationBean reservationBean, ArrayList<PassengerBean> passengers) 
+		3. (M) String cancelTicket(String reservationId)
+		4. (M) Map<ReservationBean,PassengerBean> viewTicket(String reservationId) 
+		5. (M) Map<ReservationBean,PassengerBean> printTicket(String reservationId)
+	3. (C) xyzDAO
+		1. (M) String createXYZ(BeanObject) 
+		2. (M) int deleteXYZ(ArrayList<String>) 
+		3. (M) String updateXYZ(BeanObject) 
+		4. (M) BeanObject findByID(String)
+		5. (M) ArrayList<BeanObject> findAll()
+	4. (INT) IAuthentication
+		1. (M) String authenticate(CredentialsBean credentialsBean)
+		2. (M) String authorize(String userId)
+		3. (M) String changeLoginStatus(CredentialsBean credentialsBean, int loginStatus)
+	5. (INT) IUser
+		1. (M) String login(CredentialsBean credentialsBean) ["A", "C", "FAIL", “INVALID”]
+		2. (M) String logout(String userId)
+		3. (M) String changePassword(CredentialsBean credentialsBean, String newPassword) ["SUCCESS", "FAIL", “INVALID”]
+		4. (M) String register(ProfileBean profileBean) [<userId of length 6>, "FAIL"] {userId-> first 2 letter of first name followed by 4 digit auto generated number}
+	6. (INT) IPayment
+		1. String creditCardNumber
+		2. String validFrom
+		3. String validTo 
+		4. int balance
+		5. (M) String findByCardNumber(String userid, String cardnumber) 
+		6. (M) String process(Payment payment) {Rename to paymentStatus()}
